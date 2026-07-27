@@ -11,7 +11,7 @@ SECRET_KEY = 'django-insecure-savo-mart-supermarket-grocery-key-2026'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [".vercel.app", "127.0.0.1", "localhost"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
