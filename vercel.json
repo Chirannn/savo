@@ -12,7 +12,8 @@
       "dest": "manage.py"
     }
   ]
-}{
+}
+{
   "functions": {
     "api/index.py": {
       "runtime": "python3.12"
