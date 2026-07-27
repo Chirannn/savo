@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% block title %}My Profile & Orders - Savo Mart{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2.5rem 1.25rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 2rem;">User Account Dashboard</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Welcome back, <strong>{{ user.first_name|default:user.username }}</strong>! Manage your profile, view order history & addresses.</p>
+    </div>
+    <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-green" style="color: #D32F2F; border-color: #D32F2F;"><i class="fa-solid fa-right-from-bracket"></i> Logout Account</a>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 240px 1fr; gap: 2rem;">
+    <!-- Sidebar Nav -->
+    <div style="background: white; padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); height: fit-content;">
+      <button class="profile-nav-tab active" onclick="showProfileTab('orders', this)" style="width: 100%; text-align: left; padding: 0.75rem 1rem; border-radius: 8px; border: none; background: var(--primary-green-light); color: var(--primary-green); font-weight: 700; cursor: pointer; margin-bottom: 0.5rem;">
+        <i class="fa-solid fa-box-open" style="width: 20px;"></i> My Orders ({{ orders|length }})
+      </button>
+
+      <button class="profile-nav-tab" onclick="showProfileTab('personal', this)" style="width: 100%; text-align: left; padding: 0.75rem 1rem; border-radius: 8px; border: none; background: transparent; color: var(--text-dark); font-weight: 600; cursor: pointer; margin-bottom: 0.5rem;">
+        <i class="fa-solid fa-user-pen" style="width: 20px;"></i> Personal Details
+      </button>
+
+      <button class="profile-nav-tab" onclick="showProfileTab('addresses', this)" style="width: 100%; text-align: left; padding: 0.75rem 1rem; border-radius: 8px; border: none; background: transparent; color: var(--text-dark); font-weight: 600; cursor: pointer; margin-bottom: 0.5rem;">
+        <i class="fa-solid fa-location-dot" style="width: 20px;"></i> Saved Addresses ({{ addresses|length }})
+      </button>
+
+      <a href="{% url 'wishlist' %}" style="display: block; width: 100%; text-align: left; padding: 0.75rem 1rem; border-radius: 8px; color: var(--text-dark); font-weight: 600;">
+        <i class="fa-regular fa-heart" style="width: 20px;"></i> Wishlist ({{ wishlist_products|length }})
+      </a>
+    </div>
+
+    <!-- Tab Contents -->
+    <main>
+      <!-- Tab 1: Orders History -->
+      <div id="ptab-orders" class="profile-tab-content" style="background: white; padding: 1.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+        <h3 style="font-size: 1.25rem; margin-bottom: 1.25rem;">Order History</h3>
+        {% if orders %}
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border-color); text-align: left; font-size: 0.85rem; color: var(--text-muted);">
+                <th style="padding-bottom: 0.75rem;">Order ID</th>
+                <th style="padding-bottom: 0.75rem;">Date</th>
+                <th style="padding-bottom: 0.75rem;">Status</th>
+                <th style="padding-bottom: 0.75rem;">Total</th>
+                <th style="padding-bottom: 0.75rem; text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ord in orders %}
+                <tr style="border-bottom: 1px solid var(--border-color-light);">
+                  <td style="padding: 1rem 0; font-weight: 700; color: var(--primary-green);">{{ ord.order_number }}</td>
+                  <td style="font-size: 0.88rem; color: var(--text-muted);">{{ ord.created_at|date:"d M, Y" }}</td>
+                  <td>
+                    <span class="badge {% if ord.order_status == 'DELIVERED' %}badge-green{% else %}badge-orange{% endif %}">
+                      {{ ord.get_order_status_display }}
+                    </span>
+                  </td>
+                  <td style="font-weight: 700;">₹{{ ord.grand_total }}</td>
+                  <td style="text-align: right;">
+                    <a href="{% url 'order_tracking_detail' ord.order_number %}" class="btn btn-sm btn-outline-green"><i class="fa-solid fa-location-arrow"></i> Track</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            <i class="fa-solid fa-box-open fa-3x" style="margin-bottom: 1rem;"></i>
+            <p>You haven't placed any grocery orders yet.</p>
+            <a href="{% url 'product_list' %}" class="btn btn-primary btn-sm" style="margin-top: 1rem;">Start Shopping</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Tab 2: Personal Details -->
+      <div id="ptab-personal" class="profile-tab-content" style="display: none; background: white; padding: 1.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+        <h3 style="font-size: 1.25rem; margin-bottom: 1.25rem;">Personal Information</h3>
+        <form action="{% url 'user_profile' %}" method="POST">
+          {% csrf_token %}
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" required>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" name="phone" class="form-control" value="{{ profile.phone|default:'' }}" placeholder="+91 98765 43210">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
+        </form>
+      </div>
+
+      <!-- Tab 3: Saved Addresses -->
+      <div id="ptab-addresses" class="profile-tab-content" style="display: none; background: white; padding: 1.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1.25rem;">Saved Delivery Addresses</h3>
+        </div>
+
+        {% if addresses %}
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            {% for addr in addresses %}
+              <div style="border: 1.5px solid var(--border-color); padding: 1.25rem; border-radius: var(--radius-md); position: relative;">
+                {% if addr.is_default %}<span class="badge badge-green" style="position: absolute; top: 10px; right: 10px;">Default</span>{% endif %}
+                <h4 style="font-size: 1rem; margin-bottom: 0.4rem;">{{ addr.recipient_name }} <span style="font-size: 0.8rem; color: var(--text-muted);">({{ addr.title }})</span></h4>
+                <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.4;">{{ addr.street_address }}, {{ addr.city }}, {{ addr.state }} - {{ addr.postal_code }}</p>
+                <p style="font-size: 0.82rem; margin-top: 0.5rem; color: var(--text-dark);"><i class="fa-solid fa-phone"></i> {{ addr.phone }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Add New Address Form -->
+        <h4 style="font-size: 1.1rem; margin-bottom: 1rem; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">Add New Delivery Address</h4>
+        <form action="{% url 'add_address' %}" method="POST">
+          {% csrf_token %}
+          <div style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Address Tag</label>
+              <select name="title" class="form-control">
+                <option value="HOME">HOME</option>
+                <option value="WORK">WORK</option>
+                <option value="OTHER">OTHER</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Recipient Name</label>
+              <input type="text" name="recipient_name" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input type="tel" name="phone" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Street Address & Flat No.</label>
+            <input type="text" name="street_address" class="form-control" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <input type="text" name="city" class="form-control" value="Bengaluru" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">State</label>
+              <input type="text" name="state" class="form-control" value="Karnataka" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Postal Code</label>
+              <input type="text" name="postal_code" class="form-control" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-orange"><i class="fa-solid fa-plus"></i> Add Address</button>
+        </form>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+function showProfileTab(tabId, btn) {
+  document.querySelectorAll('.profile-tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.profile-nav-tab').forEach(b => {
+    b.style.background = 'transparent';
+    b.style.color = 'var(--text-dark)';
+  });
+
+  document.getElementById('ptab-' + tabId).style.display = 'block';
+  btn.style.background = 'var(--primary-green-light)';
+  btn.style.color = 'var(--primary-green)';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}About Us - Savo Mart Supermarket{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 3rem 1.25rem;">
+  <div style="text-align: center; max-width: 750px; margin: 0 auto 3rem;">
+    <span class="badge badge-green" style="margin-bottom: 0.5rem;">Our Mission</span>
+    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Connecting Local Farmers Directly to Your Kitchen</h1>
+    <p style="font-size: 1.1rem; color: var(--text-muted);">
+      Founded with a vision to revolutionize urban grocery shopping, Savo Mart delivers farm-fresh organic produce, artisanal bakery breads, pure dairy, and household essentials in under 2 hours.
+    </p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+    <div style="background: white; padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center;">
+      <div style="width: 60px; height: 60px; background: var(--primary-green-light); color: var(--primary-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1rem;">
+        <i class="fa-solid fa-leaf"></i>
+      </div>
+      <h3>100% Farm Organic</h3>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-top: 0.5rem;">We partner directly with certified organic local farmers, eliminating middlemen to guarantee peak freshness.</p>
+    </div>
+
+    <div style="background: white; padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center;">
+      <div style="width: 60px; height: 60px; background: var(--accent-orange-light); color: var(--accent-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1rem;">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+      <h3>Ultra-Fast Delivery</h3>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-top: 0.5rem;">Our micro-fulfillment dispatch hubs ensure your grocery basket reaches your home within 2 hours of ordering.</p>
+    </div>
+
+    <div style="background: white; padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center;">
+      <div style="width: 60px; height: 60px; background: var(--primary-green-light); color: var(--primary-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1rem;">
+        <i class="fa-solid fa-hand-holding-heart"></i>
+      </div>
+      <h3>Quality Guaranteed</h3>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-top: 0.5rem;">If an item doesn't meet your freshness expectations, our instant doorstep return policy replaces it right away.</p>
+    </div>
+  </div>
+
+  <div style="background: white; border-radius: var(--radius-lg); padding: 3rem; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 2rem;">
+    <div style="flex: 1; min-width: 280px;">
+      <h2 style="font-size: 2rem; margin-bottom: 1rem;">Savo Mart by the Numbers</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Building trust and delivering happiness across 15+ city zones.</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div>
+          <h3 style="font-size: 2rem; color: var(--primary-green);">50,000+</h3>
+          <span style="font-size: 0.9rem; color: var(--text-muted);">Happy Customers</span>
+        </div>
+        <div>
+          <h3 style="font-size: 2rem; color: var(--accent-orange);">5,000+</h3>
+          <span style="font-size: 0.9rem; color: var(--text-muted);">Grocery Items</span>
+        </div>
+        <div>
+          <h3 style="font-size: 2rem; color: var(--primary-green);">120+</h3>
+          <span style="font-size: 0.9rem; color: var(--text-muted);">Partner Farms</span>
+        </div>
+        <div>
+          <h3 style="font-size: 2rem; color: var(--accent-orange);">99.4%</h3>
+          <span style="font-size: 0.9rem; color: var(--text-muted);">On-Time Delivery</span>
+        </div>
+      </div>
+    </div>
+    <div style="flex: 1; min-width: 280px;">
+      <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80" alt="Savo Mart Team" style="border-radius: var(--radius-md);">
+    </div>
+  </div>
+</div>
+{% endblock %}

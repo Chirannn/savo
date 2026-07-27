@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - Savo Mart Manager{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2.5rem 1.25rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+      <span class="badge badge-orange" style="margin-bottom: 0.3rem;">Savo Mart Store Operations</span>
+      <h1 style="font-size: 2rem;">Admin Executive Dashboard</h1>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="{% url 'admin_products' %}" class="btn btn-sm btn-primary"><i class="fa-solid fa-boxes-stacked"></i> Manage Products</a>
+      <a href="{% url 'admin_orders' %}" class="btn btn-sm btn-orange"><i class="fa-solid fa-truck-ramp-box"></i> Manage Orders</a>
+    </div>
+  </div>
+
+  <!-- Key Metrics Row -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+    <div style="background: white; padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 1.25rem;">
+      <div style="width: 55px; height: 55px; background: var(--primary-green-light); color: var(--primary-green); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+        <i class="fa-solid fa-indian-rupee-sign"></i>
+      </div>
+      <div>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Total Sales Revenue</span>
+        <h3 style="font-size: 1.6rem; color: var(--primary-green);">₹{{ total_revenue }}</h3>
+      </div>
+    </div>
+
+    <div style="background: white; padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 1.25rem;">
+      <div style="width: 55px; height: 55px; background: var(--accent-orange-light); color: var(--accent-orange); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+        <i class="fa-solid fa-cart-flatbed"></i>
+      </div>
+      <div>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Total Grocery Orders</span>
+        <h3 style="font-size: 1.6rem; color: var(--accent-orange);">{{ total_orders }}</h3>
+      </div>
+    </div>
+
+    <div style="background: white; padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 1.25rem;">
+      <div style="width: 55px; height: 55px; background: #E1F5FE; color: var(--color-info); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+        <i class="fa-solid fa-users"></i>
+      </div>
+      <div>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Registered Customers</span>
+        <h3 style="font-size: 1.6rem; color: var(--color-info);">{{ total_customers }}</h3>
+      </div>
+    </div>
+
+    <div style="background: white; padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 1.25rem;">
+      <div style="width: 55px; height: 55px; background: #FFEBEE; color: var(--color-danger); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Low Stock Items</span>
+        <h3 style="font-size: 1.6rem; color: var(--color-danger);">{{ low_stock_count }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart and Breakdown -->
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2.5rem;">
+    <!-- Sales Revenue Chart -->
+    <div style="background: white; padding: 1.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+      <h3 style="font-size: 1.15rem; margin-bottom: 1rem;"><i class="fa-solid fa-chart-area text-green"></i> Weekly Grocery Sales Analytics</h3>
+      <canvas id="salesChart" height="150"></canvas>
+    </div>
+
+    <!-- Category Share -->
+    <div style="background: white; padding: 1.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+      <h3 style="font-size: 1.15rem; margin-bottom: 1rem;"><i class="fa-solid fa-chart-pie text-orange"></i> Category Inventory</h3>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        {% for cat in category_data %}
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; border-bottom: 1px solid var(--border-color-light); padding-bottom: 0.4rem;">
+            <span><i class="fa-solid {{ cat.icon }} text-green" style="width: 20px;"></i> {{ cat.name }}</span>
+            <span class="badge badge-green">{{ cat.product_count }} Products</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Orders Table -->
+  <div style="background: white; padding: 1.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <h3 style="font-size: 1.2rem;">Recent Store Orders</h3>
+      <a href="{% url 'admin_orders' %}" class="btn btn-sm btn-outline-green">View All Orders</a>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="border-bottom: 2px solid var(--border-color); text-align: left; font-size: 0.85rem; color: var(--text-muted);">
+          <th style="padding-bottom: 0.75rem;">Order Number</th>
+          <th style="padding-bottom: 0.75rem;">Customer</th>
+          <th style="padding-bottom: 0.75rem;">Delivery Slot</th>
+          <th style="padding-bottom: 0.75rem;">Status</th>
+          <th style="padding-bottom: 0.75rem;">Amount</th>
+          <th style="padding-bottom: 0.75rem; text-align: right;">Update Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ord in recent_orders %}
+          <tr style="border-bottom: 1px solid var(--border-color-light); font-size: 0.9rem;">
+            <td style="padding: 0.9rem 0; font-weight: 700; color: var(--primary-green);">{{ ord.order_number }}</td>
+            <td>{{ ord.full_name }}</td>
+            <td style="font-size: 0.82rem; color: var(--text-muted);">{{ ord.delivery_slot }}</td>
+            <td>
+              <span class="badge {% if ord.order_status == 'DELIVERED' %}badge-green{% elif ord.order_status == 'CANCELLED' %}badge-danger{% else %}badge-orange{% endif %}">
+                {{ ord.get_order_status_display }}
+              </span>
+            </td>
+            <td style="font-weight: 700;">₹{{ ord.grand_total }}</td>
+            <td style="text-align: right;">
+              <form action="{% url 'update_order_status' ord.id %}" method="POST" style="display: inline-flex; gap: 0.4rem;">
+                {% csrf_token %}
+                <select name="order_status" class="form-control" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; width: auto;" onchange="this.form.submit()">
+                  {% for code, label in ord.STATUS_CHOICES %}
+                    <option value="{{ code }}" {% if ord.order_status == code %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const ctx = document.getElementById('salesChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Grocery Revenue (₹)',
+        data: [12400, 18500, 14200, 22100, 29800, 38400, 42100],
+        borderColor: '#2E7D32',
+        backgroundColor: 'rgba(46, 125, 50, 0.1)',
+        fill: true,
+        tension: 0.4,
+        borderWidth: 3,
+        pointBackgroundColor: '#FF9800'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true }
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}My Wishlist - Savo Mart{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2.5rem 1.25rem;">
+  <h1 style="font-size: 2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-heart text-orange"></i> My Saved Wishlist</h1>
+  <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem;">Items saved for quick 1-click addition to your grocery cart.</p>
+
+  {% if wishlist_products %}
+    <div class="grid-products">
+      {% for product in wishlist_products %}
+        <div class="product-card">
+          <div class="product-badge-group">
+            {% if product.discount_percent %}
+              <span class="badge badge-orange">-{{ product.discount_percent }}% OFF</span>
+            {% endif %}
+          </div>
+
+          <div class="product-actions-floating">
+            <button class="btn-icon-circle wishlist-btn active" data-product-id="{{ product.id }}" title="Remove from Wishlist">
+              <i class="fa-solid fa-heart text-danger"></i>
+            </button>
+          </div>
+
+          <div class="product-img-wrap">
+            <img src="{{ product.image_url }}" alt="{{ product.name }}">
+          </div>
+
+          <div class="product-info">
+            <a href="{% url 'product_detail' product.slug %}" class="product-title">{{ product.name }}</a>
+            <div class="product-unit">{{ product.unit }}</div>
+
+            <div class="product-price-row">
+              <span class="current-price">₹{{ product.effective_price }}</span>
+              <form action="{% url 'add_to_cart' product.id %}" method="POST" class="ajax-add-cart-form">
+                {% csrf_token %}
+                <button type="submit" class="add-cart-btn"><i class="fa-solid fa-basket-shopping"></i> Add to Cart</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="background: white; padding: 4rem; text-align: center; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+      <i class="fa-regular fa-heart fa-4x text-muted" style="margin-bottom: 1rem;"></i>
+      <h2>Your Wishlist is Empty</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Click the heart icon on any grocery product to save it here for later.</p>
+      <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg">Explore Groceries</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

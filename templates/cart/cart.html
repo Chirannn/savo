@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}Shopping Cart - Savo Mart{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2.5rem 1.25rem;">
+  <h1 style="font-size: 2rem; margin-bottom: 1.5rem;"><i class="fa-solid fa-basket-shopping text-green"></i> Your Supermarket Basket</h1>
+
+  {% if cart_items %}
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+      <!-- Cart Items Table -->
+      <div style="background: white; border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow: hidden; padding: 1.5rem;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border-color); text-align: left; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">
+              <th style="padding-bottom: 1rem;">Product</th>
+              <th style="padding-bottom: 1rem;">Unit Price</th>
+              <th style="padding-bottom: 1rem; text-align: center;">Quantity</th>
+              <th style="padding-bottom: 1rem; text-align: right;">Total</th>
+              <th style="padding-bottom: 1rem;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart_items %}
+              <tr style="border-bottom: 1px solid var(--border-color); vertical-align: middle;">
+                <td style="padding: 1rem 0; display: flex; align-items: center; gap: 1rem;">
+                  <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" style="width: 65px; height: 65px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border-color);">
+                  <div>
+                    <a href="{% url 'product_detail' item.product.slug %}" style="font-weight: 600; font-size: 0.98rem; display: block;">{{ item.product.name }}</a>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">{{ item.product.unit }}</span>
+                  </div>
+                </td>
+                <td style="font-weight: 600;">₹{{ item.unit_price }}</td>
+                <td>
+                  <form action="{% url 'update_cart_item' item.id %}" method="POST" style="display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); border-radius: 6px; width: fit-content; margin: 0 auto; overflow: hidden;">
+                    {% csrf_token %}
+                    <button type="submit" name="quantity" value="{{ item.quantity|add:-1 }}" style="padding: 0.3rem 0.6rem; background: #F3F4F6;">-</button>
+                    <span style="padding: 0.3rem 0.8rem; font-weight: 600; font-size: 0.95rem;">{{ item.quantity }}</span>
+                    <button type="submit" name="quantity" value="{{ item.quantity|add:1 }}" style="padding: 0.3rem 0.6rem; background: #F3F4F6;">+</button>
+                  </form>
+                </td>
+                <td style="text-align: right; font-weight: 700; color: var(--primary-green);">₹{{ item.total_price }}</td>
+                <td style="text-align: right;">
+                  <form action="{% url 'remove_cart_item' item.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; color: #D32F2F; font-size: 1rem; padding: 0.4rem;" title="Remove Item"><i class="fa-solid fa-trash-can"></i></button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-green"><i class="fa-solid fa-arrow-left"></i> Continue Shopping</a>
+        </div>
+      </div>
+
+      <!-- Summary Sidebar -->
+      <div>
+        <!-- Coupon Form -->
+        <div style="background: white; padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+          <h4 style="font-size: 1rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-ticket text-orange"></i> Have a Coupon Code?</h4>
+          <form action="{% url 'apply_coupon' %}" method="POST" style="display: flex; gap: 0.5rem;">
+            {% csrf_token %}
+            <input type="text" name="coupon_code" class="form-control" placeholder="e.g. FRESH10" value="{{ coupon.code|default:'' }}" style="text-transform: uppercase;" required>
+            <button type="submit" class="btn btn-orange" style="padding: 0.5rem 1rem;">Apply</button>
+          </form>
+          <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
+            Available Coupons: <strong class="text-green">FRESH10</strong> (10% off) or <strong class="text-green">SAVO20</strong> (20% off)
+          </div>
+        </div>
+
+        <!-- Price Breakdown -->
+        <div style="background: white; padding: 1.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <h3 style="font-size: 1.2rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">Order Summary</h3>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+            <span>Subtotal ({{ cart.total_items }} items)</span>
+            <span style="font-weight: 600;">₹{{ cart.subtotal }}</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+            <span>Delivery Charges</span>
+            {% if cart.delivery_charge == 0 %}
+              <span class="text-green" style="font-weight: 700;">FREE</span>
+            {% else %}
+              <span style="font-weight: 600;">₹{{ cart.delivery_charge }}</span>
+            {% endif %}
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+            <span>Estimated GST Tax (5%)</span>
+            <span style="font-weight: 600;">₹{{ cart.tax }}</span>
+          </div>
+
+          {% if coupon_discount > 0 %}
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem; color: var(--primary-green); font-weight: 600;">
+              <span>Coupon Discount ({{ coupon.code }})</span>
+              <span>-₹{{ coupon_discount|floatformat:2 }}</span>
+            </div>
+          {% endif %}
+
+          <div style="border-top: 2px dashed var(--border-color); padding-top: 1rem; margin-top: 1rem; display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
+            <span style="font-size: 1.1rem; font-weight: 700;">Grand Total</span>
+            <span style="font-size: 1.8rem; font-weight: 800; color: var(--primary-green);">₹{{ grand_total|floatformat:2 }}</span>
+          </div>
+
+          <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg" style="width: 100%;"><i class="fa-solid fa-lock"></i> Proceed to Checkout</a>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div style="background: white; padding: 4rem; text-align: center; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+      <i class="fa-solid fa-basket-shopping fa-4x text-muted" style="margin-bottom: 1.5rem;"></i>
+      <h2>Your Cart is Currently Empty</h2>
+      <p style="color: var(--text-muted); margin-bottom: 2rem;">Looks like you haven't added any fresh groceries to your basket yet.</p>
+      <a href="{% url 'product_list' %}" class="btn btn-orange btn-lg"><i class="fa-solid fa-store"></i> Explore Fresh Supermarket</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

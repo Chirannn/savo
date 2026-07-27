@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Contact Us - Savo Mart Supermarket{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 3rem 1.25rem;">
+  <div style="text-align: center; max-width: 650px; margin: 0 auto 3rem;">
+    <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Get in Touch with Savo Mart</h1>
+    <p style="color: var(--text-muted);">Have a question about your grocery delivery, bulk order, or store partner program? We are here 24/7 to help you!</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2.5rem; margin-bottom: 4rem;">
+    <!-- Contact Info Card -->
+    <div style="background: white; padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); height: fit-content;">
+      <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem;">Contact Information</h3>
+      
+      <div style="display: flex; gap: 1rem; margin-bottom: 1.2rem;">
+        <div style="width: 40px; height: 40px; background: var(--primary-green-light); color: var(--primary-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+          <i class="fa-solid fa-location-dot"></i>
+        </div>
+        <div>
+          <h5 style="font-size: 0.95rem;">Headquarters & Central Hub</h5>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Savo Mart Hub #12, 100ft Inner Ring Road, Koramangala, Bengaluru, Karnataka 560034</p>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-bottom: 1.2rem;">
+        <div style="width: 40px; height: 40px; background: var(--accent-orange-light); color: var(--accent-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+          <i class="fa-solid fa-phone"></i>
+        </div>
+        <div>
+          <h5 style="font-size: 0.95rem;">Helpline & WhatsApp</h5>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">+91 1800-SAVO-MART<br>+91 98765 43210</p>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem;">
+        <div style="width: 40px; height: 40px; background: var(--primary-green-light); color: var(--primary-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+        <div>
+          <h5 style="font-size: 0.95rem;">Support Email</h5>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">support@savomart.com</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div style="background: white; padding: 2.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+      <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem;">Send Us a Message</h3>
+      <form action="{% url 'contact' %}" method="POST">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" name="name" class="form-control" placeholder="Rahul Sharma" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="email" class="form-control" placeholder="rahul@example.com" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <input type="text" name="subject" class="form-control" placeholder="e.g. Order Inquiry / Freshness feedback" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea name="message" class="form-control" rows="5" placeholder="How can we assist you with your grocery order?" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Send Message</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- FAQs Accordion -->
+  <div style="max-width: 800px; margin: 0 auto;">
+    <h2 style="text-align: center; margin-bottom: 1.5rem;">Frequently Asked Questions</h2>
+    <div style="background: white; border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow: hidden;">
+      <details style="padding: 1.25rem; border-bottom: 1px solid var(--border-color); cursor: pointer;">
+        <summary style="font-weight: 600; font-size: 1rem; color: var(--text-dark);"><i class="fa-solid fa-circle-question text-green" style="margin-right: 0.5rem;"></i> How fast is Savo Mart grocery delivery?</summary>
+        <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.92rem; padding-left: 1.5rem;">We deliver within 2 hours for all standard express orders placed between 6:00 AM and 10:00 PM. You can also pick a specific preferred delivery slot at checkout.</p>
+      </details>
+
+      <details style="padding: 1.25rem; border-bottom: 1px solid var(--border-color); cursor: pointer;">
+        <summary style="font-weight: 600; font-size: 1rem; color: var(--text-dark);"><i class="fa-solid fa-circle-question text-green" style="margin-right: 0.5rem;"></i> What payment options do you support?</summary>
+        <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.92rem; padding-left: 1.5rem;">We support all major payment options including instant UPI (Google Pay, PhonePe, Paytm QR), Credit & Debit Cards (Visa, MasterCard), and Cash on Delivery (COD).</p>
+      </details>
+
+      <details style="padding: 1.25rem; cursor: pointer;">
+        <summary style="font-weight: 600; font-size: 1rem; color: var(--text-dark);"><i class="fa-solid fa-circle-question text-green" style="margin-right: 0.5rem;"></i> What if a grocery item is damaged or not fresh?</summary>
+        <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.92rem; padding-left: 1.5rem;">Savo Mart offers an instant no-questions-asked doorstep refund or replacement. Simply notify our delivery executive or submit a request under your Order History.</p>
+      </details>
+    </div>
+  </div>
+</div>
+{% endblock %}

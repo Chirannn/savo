@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Order Confirmation - Savo Mart{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 4rem 1.25rem; text-align: center;">
+  <div style="max-width: 680px; margin: 0 auto; background: white; padding: 3rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-lg);">
+    <div style="width: 80px; height: 80px; background: var(--primary-green-light); color: var(--primary-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem;">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    
+    <span class="badge badge-orange" style="margin-bottom: 0.5rem;">Order Successfully Placed</span>
+    <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Thank You, {{ order.full_name }}!</h1>
+    <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2rem;">
+      Your order <strong class="text-green">#{{ order.order_number }}</strong> has been received by Savo Mart store. Our staff is carefully selecting and packing your fresh produce right now.
+    </p>
+
+    <div style="background: var(--bg-main); padding: 1.5rem; border-radius: var(--radius-md); text-align: left; margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 0.75rem;">
+        <span>Order Reference:</span>
+        <strong>{{ order.order_number }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 0.75rem;">
+        <span>Estimated Delivery Slot:</span>
+        <strong class="text-green">{{ order.delivery_slot }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 0.75rem;">
+        <span>Payment Method:</span>
+        <strong>{{ order.get_payment_method_display }} ({{ order.get_payment_status_display }})</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Total Paid:</span>
+        <strong style="font-size: 1.2rem; color: var(--primary-green);">₹{{ order.grand_total }}</strong>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="{% url 'order_tracking_detail' order.order_number %}" class="btn btn-primary btn-lg"><i class="fa-solid fa-location-crosshairs"></i> Track Order Live</a>
+      <a href="{% url 'home' %}" class="btn btn-outline-green btn-lg"><i class="fa-solid fa-house"></i> Return to Homepage</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

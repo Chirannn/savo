@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}Login or Register - Savo Mart{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 3.5rem 1.25rem;">
+  <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-lg); overflow: hidden;">
+    
+    <!-- Quick Demo Login Presets Banner -->
+    <div style="background: linear-gradient(135deg, #1B5E20, #2E7D32); color: white; padding: 1.25rem 1.5rem; text-align: center;">
+      <h4 style="font-size: 0.95rem; color: white; margin-bottom: 0.5rem;"><i class="fa-solid fa-bolt text-orange"></i> Quick Demo Login Presets</h4>
+      <div style="display: flex; gap: 0.5rem; justify-content: center;">
+        <button type="button" class="btn btn-sm btn-orange" onclick="fillDemo('user', 'user123')">
+          <i class="fa-solid fa-user"></i> Customer Demo
+        </button>
+        <button type="button" class="btn btn-sm" style="background: white; color: var(--primary-green-hover);" onclick="fillDemo('admin', 'admin123')">
+          <i class="fa-solid fa-shield"></i> Admin Demo
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs Toggle -->
+    <div style="display: flex; border-bottom: 1px solid var(--border-color);">
+      <button type="button" class="auth-tab-btn {% if active_tab == 'login' %}active{% endif %}" id="tab-btn-login" style="flex: 1; padding: 1rem; font-weight: 700; font-size: 1rem; border: none; background: white; cursor: pointer; border-bottom: 3px solid transparent;" onclick="switchAuthTab('login')">
+        Sign In
+      </button>
+      <button type="button" class="auth-tab-btn {% if active_tab == 'register' %}active{% endif %}" id="tab-btn-register" style="flex: 1; padding: 1rem; font-weight: 700; font-size: 1rem; border: none; background: white; cursor: pointer; border-bottom: 3px solid transparent;" onclick="switchAuthTab('register')">
+        Create Account
+      </button>
+    </div>
+
+    <div style="padding: 2rem;">
+      <!-- Login Form -->
+      <form action="{% url 'login' %}" method="POST" id="auth-form-login" style="display: {% if active_tab == 'login' %}block{% else %}none{% endif %};">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="login">
+
+        <div class="form-group">
+          <label class="form-label">Username or Email</label>
+          <input type="text" name="username" id="auth_username" class="form-control" placeholder="user / admin" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" id="auth_password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 0.5rem;">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In to Savo Mart
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form action="{% url 'register' %}" method="POST" id="auth-form-register" style="display: {% if active_tab == 'register' %}block{% else %}none{% endif %};">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="register">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input type="text" name="first_name" class="form-control" placeholder="Pooja" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input type="text" name="last_name" class="form-control" placeholder="Sharma" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-control" placeholder="pooja123" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" name="email" class="form-control" placeholder="pooja@example.com" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" name="password_confirm" class="form-control" placeholder="••••••••" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-orange btn-lg" style="width: 100%; margin-top: 0.5rem;">
+          <i class="fa-solid fa-user-plus"></i> Create My Account
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function fillDemo(username, password) {
+  switchAuthTab('login');
+  document.getElementById('auth_username').value = username;
+  document.getElementById('auth_password').value = password;
+}
+
+function switchAuthTab(tab) {
+  const loginForm = document.getElementById('auth-form-login');
+  const registerForm = document.getElementById('auth-form-register');
+  const btnLogin = document.getElementById('tab-btn-login');
+  const btnRegister = document.getElementById('tab-btn-register');
+
+  if (tab === 'login') {
+    loginForm.style.display = 'block';
+    registerForm.style.display = 'none';
+    btnLogin.style.borderBottom = '3px solid var(--primary-green)';
+    btnLogin.style.color = 'var(--primary-green)';
+    btnRegister.style.borderBottom = '3px solid transparent';
+    btnRegister.style.color = 'var(--text-dark)';
+  } else {
+    loginForm.style.display = 'none';
+    registerForm.style.display = 'block';
+    btnRegister.style.borderBottom = '3px solid var(--accent-orange)';
+    btnRegister.style.color = 'var(--accent-orange)';
+    btnLogin.style.borderBottom = '3px solid transparent';
+    btnLogin.style.color = 'var(--text-dark)';
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  switchAuthTab('{{ active_tab|default:"login" }}');
+});
+</script>
+{% endblock %}

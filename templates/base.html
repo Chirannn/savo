@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Savo Mart - Online Supermarket & Fresh Grocery Delivery{% endblock %}</title>
+  <meta name="description" content="Shop fresh organic vegetables, fruits, dairy, bakery, beverages, and daily essentials delivered to your doorstep with Savo Mart.">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Savo Mart Custom Styles -->
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Announcement Bar -->
+  <div class="top-bar">
+    <div class="container top-bar-content">
+      <div class="top-bar-info">
+        <span><i class="fa-solid fa-truck-fast text-orange"></i> Free Delivery on orders above ₹500</span>
+        <span><i class="fa-solid fa-leaf text-green"></i> 100% Organic Farm Fresh Produce</span>
+      </div>
+      <div>
+        <span style="margin-right: 1rem;"><i class="fa-solid fa-headset"></i> Support: +91 1800-SAVO-MART</span>
+        <a href="{% url 'order_tracking_search' %}" style="color: #FFF3E0; font-weight: 600;"><i class="fa-solid fa-location-dot"></i> Track Order</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Main -->
+  <header class="header-main">
+    <div class="container header-inner">
+      <!-- Logo -->
+      <a href="{% url 'home' %}" class="brand-logo">
+        <div class="logo-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+        <span>Savo<span class="logo-orange">Mart</span></span>
+      </a>
+
+      <!-- Search Form -->
+      <div class="header-search">
+        <form action="{% url 'product_list' %}" method="GET" class="search-form">
+          <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search fresh vegetables, dairy, bakery, snacks..." class="search-input" required>
+          <button type="submit" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
+      </div>
+
+      <!-- Action Links -->
+      <div class="header-actions">
+        <!-- Wishlist -->
+        <a href="{% url 'wishlist' %}" class="action-item" title="My Wishlist">
+          <div class="icon-badge-wrap">
+            <i class="fa-regular fa-heart"></i>
+            <span class="badge-count wishlist-badge-count">{{ global_wishlist_count|default:0 }}</span>
+          </div>
+          <div class="action-text">
+            <span class="text-muted">Saved</span>
+            <strong>Wishlist</strong>
+          </div>
+        </a>
+
+        <!-- Cart -->
+        <a href="{% url 'cart_detail' %}" class="action-item" title="Shopping Cart">
+          <div class="icon-badge-wrap">
+            <i class="fa-solid fa-basket-shopping text-green"></i>
+            <span class="badge-count cart-badge-count">{{ global_cart_count|default:0 }}</span>
+          </div>
+          <div class="action-text">
+            <span class="text-muted">My Cart</span>
+            <strong>Shopping</strong>
+          </div>
+        </a>
+
+        <!-- Account User -->
+        <div class="action-item" style="position: relative;">
+          {% if user.is_authenticated %}
+            <a href="{% url 'user_profile' %}" style="display: flex; align-items: center; gap: 0.5rem;">
+              <div class="icon-badge-wrap">
+                <i class="fa-solid fa-user-circle text-orange"></i>
+              </div>
+              <div class="action-text">
+                <span class="text-muted">Hello, {{ user.first_name|default:user.username }}</span>
+                <strong>My Account</strong>
+              </div>
+            </a>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn btn-sm btn-outline-green">
+              <i class="fa-solid fa-right-to-bracket"></i> Login / Register
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Nav Bar -->
+    <nav class="header-nav">
+      <div class="container nav-inner">
+        <a href="{% url 'category_list' %}" class="categories-btn">
+          <i class="fa-solid fa-grip"></i> All Categories <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem;"></i>
+        </a>
+        <ul class="nav-links">
+          <li><a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+          <li><a href="{% url 'product_list' %}" class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">All Products</a></li>
+          <li><a href="{% url 'category_list' %}" class="{% if request.resolver_match.url_name == 'category_list' %}active{% endif %}">Categories</a></li>
+          <li><a href="{% url 'order_tracking_search' %}" class="{% if 'tracking' in request.path %}active{% endif %}">Order Tracking</a></li>
+          <li><a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">About Us</a></li>
+          <li><a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact Us</a></li>
+          {% if user.is_staff or user.username == 'admin' %}
+            <li><a href="{% url 'admin_dashboard' %}" style="color: #FF9800; font-weight: 700;"><i class="fa-solid fa-chart-line"></i> Admin Dashboard</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Messages / Toast Flash -->
+  {% if messages %}
+    <div class="toast-container">
+      {% for message in messages %}
+        <div class="toast-msg toast-{{ message.tags }}">
+          <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation text-orange{% else %}fa-circle-check text-green{% endif %}"></i>
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main Content Block -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Quick View Modal Container -->
+  <div class="modal-backdrop" id="quickview-modal">
+    <div class="modal-box" id="quickview-content">
+      <!-- Loaded dynamically via JS -->
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer-main">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo" style="margin-bottom: 1rem; color: white;">
+            <div class="logo-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+            <span>Savo<span class="logo-orange">Mart</span></span>
+          </div>
+          <p style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.2rem;">
+            Savo Mart is your premier local supermarket and grocery delivery partner. Sourcing fresh organic vegetables, dairy, bakery, snacks, and daily essentials straight from farms to your kitchen.
+          </p>
+          <div style="display: flex; gap: 1rem; font-size: 1.2rem;">
+            <a href="#" style="color: #9CA3AF;"><i class="fa-brands fa-facebook"></i></a>
+            <a href="#" style="color: #9CA3AF;"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" style="color: #9CA3AF;"><i class="fa-brands fa-twitter"></i></a>
+            <a href="#" style="color: #9CA3AF;"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'product_list' %}">All Products</a></li>
+            <li><a href="{% url 'category_list' %}">Grocery Categories</a></li>
+            <li><a href="{% url 'about' %}">About Our Story</a></li>
+            <li><a href="{% url 'contact' %}">Store Locations & Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Customer Care</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'order_tracking_search' %}">Order Tracking</a></li>
+            <li><a href="{% url 'cart_detail' %}">Shopping Cart</a></li>
+            <li><a href="{% url 'wishlist' %}">My Wishlist</a></li>
+            <li><a href="{% url 'login' %}">Account Login</a></li>
+            <li><a href="{% url 'contact' %}">FAQs & Support</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Subscribe Newsletter</h4>
+          <p style="font-size: 0.88rem; margin-bottom: 1rem;">Get ₹100 OFF coupon on your first grocery order!</p>
+          <form action="{% url 'contact' %}" method="POST" style="display: flex; gap: 0.5rem;">
+            {% csrf_token %}
+            <input type="email" placeholder="Enter your email" class="form-control" style="border-radius: 8px;" required>
+            <button type="submit" class="btn btn-orange" style="padding: 0.75rem 1rem;"><i class="fa-solid fa-paper-plane"></i></button>
+          </form>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Savo Mart Online Supermarket. All Rights Reserved.</p>
+        <div>
+          <i class="fa-brands fa-cc-visa fa-lg" style="margin-right: 0.5rem;"></i>
+          <i class="fa-brands fa-cc-mastercard fa-lg" style="margin-right: 0.5rem;"></i>
+          <i class="fa-solid fa-qrcode fa-lg" style="margin-right: 0.5rem;" title="UPI Payments"></i>
+          <i class="fa-solid fa-money-bill-wave fa-lg" title="Cash on Delivery"></i>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
